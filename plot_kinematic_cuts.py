@@ -55,10 +55,10 @@ def setup_matrix(matrix, x_bins, y_bins):
     
 def get_kinematic_cuts(input_arguments, tof):
     if '--apply-cut-factors' in input_arguments:
-        arg = np.argwhere(input_arguments == 'apply-cut-factors')
-        c1 = input_arguments[arg+1]
-        c2 = input_arguments[arg+2]
-        c3 = input_arguments[arg+3]
+        arg = np.argwhere(input_arguments == '--apply-cut-factors')[0][0]
+        c1 = float(input_arguments[arg+1])
+        c2 = float(input_arguments[arg+2])
+        c3 = float(input_arguments[arg+3])
     else:
         c1 = 1
         c2 = 1
@@ -71,7 +71,7 @@ def plot_for_paper(t_bins, t_counts, t_bgr, e_bins_S1, e_bins_S2,
                    matrix_S1, matrix_S2, inp_args):
     
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True)
-    fig.set_size_inches(4, 8)
+    fig.set_size_inches(4, 12)
     
     # Set colorbar min/max
     vmin = 1
@@ -108,28 +108,51 @@ def plot_for_paper(t_bins, t_counts, t_bgr, e_bins_S1, e_bins_S2,
     # Configure plot
     # --------------
     ax1.set_ylabel('$E_{ee}$ $(MeV_{ee})$')
-    ax1.set_ylim(0, 2.3)
-    
     ax2.set_ylabel('$E_{ee}$ $(MeV_{ee})$')
-    ax2.set_ylim(0, 6)
-    
-    ax3.set_xlabel('$t_{TOF}$ (ns)')
     ax3.set_ylabel('counts')
-    ax3.set_yscale('log')
-    ax3.set_xlim(0, 100)
-    ax3.set_ylim(bottom=1)
+    ax3.set_xlabel('$t_{TOF}$ (ns)')
     
+    y1 = (0, 2.3)
+    y2 = (0, 6)
+    x3 = (0, 100)
+    y3 = (1, 2E3)
+    ax1.set_ylim(y1)
+    ax2.set_ylim(y2)
+    ax3.set_yscale('log')
+    ax3.set_yticks([1, 10, 100, 1000])
+    ax3.set_xlim(x3)
+    ax3.set_ylim(y3)
+
+    bbox = dict(facecolor='white', edgecolor='black')
+    ax1.text(0.89, 0.88, '(a)', transform=ax1.transAxes, bbox=bbox)
+    ax2.text(0.89, 0.88, '(b)', transform=ax2.transAxes, bbox=bbox)
+    ax3.text(0.89, 0.88, '(c)', transform=ax3.transAxes, bbox=bbox)
+
     # Add colorbar
     # ------------
     fig.subplots_adjust(top=0.8)
-    cbar_ax = fig.add_axes([0.2, 0.85, 0.73, 0.02])
+    cbar_ax = fig.add_axes([0.2, 0.84, 0.73, 0.02])
     sm = plt.cm.ScalarMappable(cmap=my_cmap, norm=normed)
     fig.colorbar(sm, cax=cbar_ax, orientation='horizontal')    
+    plt.subplots_adjust(hspace=0.1)
 
-
-
-# Import data
-f_name = 'data/98044_47.3_56.2.pickle'
-t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, m_S1, m_S2, inp_args = import_data(f_name)
-plot_for_paper(t_bins, t_counts, t_bgr, e_bins_S1, e_bins_S2, m_S1, m_S2, inp_args)
-
+if __name__=='__main__':
+    plt.close('all')
+    # Import data
+    f_name = 'data/98044.pickle'
+    t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, m_S1, m_S2, inp_args = import_data(f_name)
+    
+    # Plot 2d histogram
+    plot_for_paper(t_bins, t_counts, t_bgr, e_bins_S1, e_bins_S2, m_S1, 
+                   m_S2, inp_args)
+    
+    # Save figure
+    plt.savefig('98044_kincut.png', dpi=1200, bbox_inches='tight', 
+                pad_inches=0)
+    
+    
+    
+    
+    
+    
+    
