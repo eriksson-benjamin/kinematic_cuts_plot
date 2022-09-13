@@ -83,7 +83,10 @@ def plot_for_paper(t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, matrix_S1,
     normed = matplotlib.colors.LogNorm(vmin, vmax)
 
     # Set white background
-    my_cmap = matplotlib.cm.get_cmap('jet').copy()
+    try: 
+        my_cmap = matplotlib.cm.get_cmap('jet').copy()
+    except: 
+        my_cmap = plt.cm.jet
     my_cmap.set_under('w', 1)
 
     # Plot S1 2D histogram
@@ -100,9 +103,12 @@ def plot_for_paper(t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, matrix_S1,
 
     # Plot TOF projection
     # -------------------
-    ax3.plot(t_bins, t_counts - t_bgr, 'k.', markersize=1)
-    ax3.errorbar(t_bins, t_counts - t_bgr, np.sqrt(t_counts), color='k',
+    ax3.plot(t_bins, t_counts, 'k.', markersize=1)
+    ax3.errorbar(t_bins, t_counts, np.sqrt(t_counts), color='k',
                  linestyle='None')
+
+    # Plot background component
+    ax3.plot(t_bins, t_bgr, 'C0--')
 
     # Add lines for kinematic cuts
     S1_min, S1_max, S2_max = get_kinematic_cuts(inp_args, t_bins)
@@ -118,8 +124,8 @@ def plot_for_paper(t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, matrix_S1,
 
     y1 = (0, 2.3)
     y2 = (0, 6)
-    x3 = (0, 100)
-    y3 = (1, 2E3)
+    x3 = (-100, 100)
+    y3 = (10, 2E3)
     ax1.set_ylim(y1)
     ax2.set_ylim(y2)
     ax3.set_yscale('log')
@@ -137,19 +143,25 @@ def plot_for_paper(t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, matrix_S1,
     fig.subplots_adjust(top=0.8)
     cbar_ax = fig.add_axes([0.2, 0.84, 0.73, 0.02])
     sm = plt.cm.ScalarMappable(cmap=my_cmap, norm=normed)
-    fig.colorbar(sm, cax=cbar_ax, orientation='horizontal')
+    try: 
+        fig.colorbar(sm, cax=cbar_ax, orientation='horizontal')
+    except:
+        print('Colorbar feature not available on Galactica.')
+        
+    
+
     plt.subplots_adjust(hspace=0.1)
 
 
 if __name__ == '__main__':
     plt.close('all')
     # Import data
-    f_name = 'data/98044.pickle'
+    f_name = 'data/100850.pickle'
     dat = import_data(f_name)
 
     # Plot 2d histogram
     plot_for_paper(*dat)
 
     # Save figure
-    plt.savefig('98044_kincut.png', dpi=1200, bbox_inches='tight',
+    plt.savefig('100850_kincut.png', dpi=1200, bbox_inches='tight',
                 pad_inches=0)
