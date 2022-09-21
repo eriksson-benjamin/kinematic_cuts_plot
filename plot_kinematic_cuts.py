@@ -83,9 +83,9 @@ def plot_for_paper(t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, matrix_S1,
     normed = matplotlib.colors.LogNorm(vmin, vmax)
 
     # Set white background
-    try: 
+    try:
         my_cmap = matplotlib.cm.get_cmap('jet').copy()
-    except: 
+    except Exception:
         my_cmap = plt.cm.jet
     my_cmap.set_under('w', 1)
 
@@ -138,17 +138,24 @@ def plot_for_paper(t_counts, t_bins, t_bgr, e_bins_S1, e_bins_S2, matrix_S1,
     ax2.text(0.89, 0.88, '(b)', transform=ax2.transAxes, bbox=bbox)
     ax3.text(0.89, 0.88, '(c)', transform=ax3.transAxes, bbox=bbox)
 
+    ax1.text(0.36, 0.85, 'III', transform=ax1.transAxes)
+    ax1.text(0.6, 0.85, 'I', transform=ax1.transAxes)
+    ax2.text(0.4, 0.85, 'IV', transform=ax2.transAxes)
+    ax2.text(0.55, 0.85, 'II', transform=ax2.transAxes)
+
+    ax1.axvline(x=0, linestyle='--', color='k')
+    ax2.axvline(x=0, linestyle='--', color='k')
+    ax3.axvline(x=0, linestyle='--', color='k')
+
     # Add colorbar
     # ------------
     fig.subplots_adjust(top=0.8)
     cbar_ax = fig.add_axes([0.2, 0.84, 0.73, 0.02])
     sm = plt.cm.ScalarMappable(cmap=my_cmap, norm=normed)
-    try: 
+    try:
         fig.colorbar(sm, cax=cbar_ax, orientation='horizontal')
-    except:
+    except Exception:
         print('Colorbar feature not available on Galactica.')
-        
-    
 
     plt.subplots_adjust(hspace=0.1)
 
